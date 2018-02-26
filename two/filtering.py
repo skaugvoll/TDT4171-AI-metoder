@@ -56,7 +56,7 @@ def forwarding(T, o, msg):
     # print("msg:" + str(msg), msg.shape)
     # print("o:" + str(o), o.shape)
     # print("T.T:" + str(T.T), T.T.shape)
-    return normalizing(o * T.T * msg)
+    return normalizing(o * T.T * msg) # o * T.T * msg is the equation 15.12 found on page 579
 
 
 def filtering(init_msg,T, O, evidences):

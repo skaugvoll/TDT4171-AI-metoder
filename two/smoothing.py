@@ -17,7 +17,7 @@ import numpy as np
 
 
 def backward(T, o, msg):
-    return  T * o * msg
+    return  T * o * msg # is the equation 15.13 found on page 579
 
 
 def forwardBackward(evidences, init_msg, T, O):
@@ -58,7 +58,7 @@ if(__name__ == "__main__"):
     ####### Select task
     # smoothedEstimates, b_messages = forwardBackward(evidence1, init_msg, T, O)
     smoothedEstimates, b_messages = forwardBackward(evidence2, init_msg, T, O)
-    
+
     print("SV: ", smoothedEstimates)
     print()
     print("B msg: ", b_messages)

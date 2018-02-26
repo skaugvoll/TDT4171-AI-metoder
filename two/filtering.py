@@ -44,24 +44,23 @@ import numpy as np
 
 def normalizing(probs):
     # probs = matrix with probabilities : with, without
-    print("Probz: " + str(probs))
+    # print("Probz: " + str(probs))
     c = np.sum(probs)
-    print("C: " + str(c))
+    # print("C: " + str(c))
     alpha = (1/c)
-    print("Alfa: " + str(alpha))
+    # print("Alfa: " + str(alpha))
     return probs * alpha
 
+
 def forwarding(T, o, msg):
-    pass
+    # print("msg:" + str(msg), msg.shape)
+    # print("o:" + str(o), o.shape)
+    # print("T.T:" + str(T.T), T.T.shape)
+    return normalizing(o * T.T * msg)
 
 
 def filtering(init_msg,T, O, evidences):
-    messages = [init_msg]
-    print("T : " + str(T))
-    print("init msg: " + str(init_msg))
-
-    nextMsg = T.T * init_msg
-    # print("next msg: " + str(nextMsg))
+    messages = [ init_msg ]
 
     # update step BEGIN
     # The update step is multipy the nextMsg with the probability of the evidence for this state, and normalize
@@ -71,14 +70,7 @@ def filtering(init_msg,T, O, evidences):
         else:
             probability = O[1]
 
-        # proability = O
-        # nextMsg = T ?
-        msg = probability * nextMsg
-        # print("updated msg: " + str(msg))
-        nextMsg = normalizing(msg)
-        # print("next big R: " + str(nextMsg))
-        messages.append(nextMsg)
-        nextMsg = T.T * nextMsg
+        messages.append(forwarding(T, probability, messages[-1]))
 
     return messages
 
@@ -89,12 +81,15 @@ def main():
 
 
     ###### HARDKODET SOM SKAL VÆRE HARDKODET
-    init_msg = np.matrix("0.5;0.5")
-    T = np.matrix("0.7 0.3; 0.3 0.7")
-    O = [ np.matrix("0.9 0; 0 0.2"), np.matrix("0.1 0; 0 0.2") ]
+    init_msg = np.matrix("0.5; 0.5")
+    T = np.matrix("0.7 0.3; 0.3 0.7") # dynamic transition model
+    O = [ np.matrix("0.9 0; 0 0.2"), np.matrix("0.1 0; 0 0.8") ] # observation / sensor model
 
 
+    ####### Select task
+    # messages = filtering(init_msg, T, O, evidence1)
     messages = filtering(init_msg, T, O, evidence2)
+
     print("\n\nMessages: \n" + str(messages))
 
 

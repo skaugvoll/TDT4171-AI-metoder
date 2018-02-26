@@ -33,10 +33,10 @@ def forwardBackward(evidences, init_msg, T, O):
         res = FILTERING.normalizing(np.multiply(fv_messages[evidence+1], b_msg))
         sv.insert(0,res) # add result to begining of list (this insures coorects indexes , since beginning at the end and traversing to the first element)
 
-        if(evidences[evidence]):
-            prob = O[0]
+        if(evidences[evidence]): # get the wanted sensor (probability for did he bring the umbrella or not - given that it rains or not)
+            prob = O[0] # it rains
         else:
-            prob = O[1]
+            prob = O[1] # it does not raine
 
         b_msg = backward(T, prob, b_msg)
         b_container.append(b_msg)
@@ -55,8 +55,10 @@ if(__name__ == "__main__"):
     T = np.matrix("0.7 0.3; 0.3 0.7") # dynamic transition model
     O = [ np.matrix("0.9 0; 0 0.2"), np.matrix("0.1 0; 0 0.8") ] # observation / sensor model
 
+    ####### Select task
     # smoothedEstimates, b_messages = forwardBackward(evidence1, init_msg, T, O)
     smoothedEstimates, b_messages = forwardBackward(evidence2, init_msg, T, O)
+    
     print("SV: ", smoothedEstimates)
     print()
     print("B msg: ", b_messages)

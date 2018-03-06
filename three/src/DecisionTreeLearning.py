@@ -10,6 +10,7 @@ All attributes as well as the class take values 1 or 2
 '''
 import math
 from Queue import PriorityQueue
+from Tree import Tree
 
 
 def dataGenerator(filename, filetype):
@@ -51,6 +52,11 @@ def entropy(probability):
     :param probability: p / (p + n) , p = positive examples, n = negative examples for a given attribute
     :return: bits of information
     '''
+    if(probability == 0):
+        return 0
+    elif(probability == 1):
+        return  - (probability * math.log(probability, 2))
+
     return - (probability * math.log(probability, 2) + (1 - probability) * math.log(1 - probability, 2))
 
 
@@ -68,7 +74,6 @@ def remainder(attribute, examples):
 
     # find D (all possible values for this attribute)
     unique_values = set(ex[attribute] for ex in examples)  # find all different targets / classes
-    print(unique_values)
 
     # find pDi and nDi for each d in D
 
@@ -76,14 +81,17 @@ def remainder(attribute, examples):
     total = float(0)
     totalPos = float(0)
     totalNeg = float(0)
+
+    # find number of positve and negative for this value
     for value in unique_values:
-        # find number of positve and negative for this value
         valuePos = float(0)
         valueNeg = float(0)
 
         for example in examples:
-            if example[-1] == 1: totalPos += 1
-            elif example[-1] == 2: totalNeg += 1
+            if example[-1] == 1:
+                totalPos += 1
+            elif example[-1] == 2:
+                totalNeg += 1
 
             if(example[attribute] == value):
                 if(example[-1] == 1):
@@ -129,15 +137,21 @@ def inforamtionGainBinary(attribute, examples):
     entrop = entropy(prob)
     rem = remainder(attribute, examples)
 
-
+    # return entrop
     return entrop - rem
 
 
 def decisionTree(examples, attributes, parent_examples):
+    '''
+    bla bla bla
+    :param examples:
+    :param attributes:
+    :param parent_examples:
+    :return: Tree
+    '''
     # if examples is empty then return Plurality-Values(parent_examples)
     if(len(examples) < 1):
         print("Empty examples")
-        parent_examples = []
         return pluralityValues(parent_examples)
 
     # else if all exaples have the same classification, return the classification
@@ -147,19 +161,35 @@ def decisionTree(examples, attributes, parent_examples):
         return unique_classes.pop()
 
     # else if attributes is empty then return Plurality-Values(examples)
-    if(len(attributes) < 1):
+    if not attributes:
         return pluralityValues(examples)
 
     # else
+    print("Decisions is about to be made")
     importanceRank = PriorityQueue()
     for attribute in attributes:
         importanceRank.put((-1 * inforamtionGainBinary(attribute, examples) , attribute)) # -1 * informationGain is to reverse the sort order of the priority queue
 
     A = importanceRank.get()[1] # get the one with the heighest score:: .get() gives; (value, attribute)
 
+    tree = Tree(label=A)
+
+    unique_values = set(ex[A] for ex in examples)  # find all different values A can have
+
+    for value in unique_values:
+        # reduce the dataset of examples to only have examples with the value for A equal to value
+        exs = []
+        reducedAtt = attributes[:]
+        for example in examples:
+            if example[A] == value:
+                exs.append(example)
 
 
+        subtree = decisionTree(exs, reducedAtt.remove(A), examples)
+        tree.addChild(label=value, value=subtree)
 
+    # Now we should have a decision tree
+    return tree
 
 
 
@@ -169,9 +199,11 @@ def main():
     # data = dataGenerator("empty_data", "txt")
     data = dataGenerator("training", "txt")
     # data = dataGenerator("training", "txt")
-    decisionTree(data, [0,1,2,3,4,5,6], [])
+    result = decisionTree(data, [0,1,2,3,4,5,6], [])
+
+    print(result)
 
 
 if __name__ == "__main__":
     main()
-
+    # test(0.0)

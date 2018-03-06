@@ -9,6 +9,7 @@ All attributes as well as the class take values 1 or 2
 
 '''
 import math
+from Queue import PriorityQueue
 
 
 def dataGenerator(filename, filetype):
@@ -53,7 +54,7 @@ def entropy(probability):
     return - (probability * math.log(probability, 2) + (1 - probability) * math.log(1 - probability, 2))
 
 
-def remainder(attribute):
+def remainder(attribute, examples):
     '''
     Expected entropy remaining after testing attribute A
 
@@ -61,26 +62,75 @@ def remainder(attribute):
     Each subset Ek has pk positive examples and nk negative examples
 
     :param attribute:
+    :param examples:
     :return:
     '''
 
-    # find d
+    # find D (all possible values for this attribute)
+    unique_values = set(ex[attribute] for ex in examples)  # find all different targets / classes
+    print(unique_values)
+
+    # find pDi and nDi for each d in D
+
     # sum for each k (pk + nk / p + n) * B(pk / pk + nk)
+    total = float(0)
+    totalPos = float(0)
+    totalNeg = float(0)
+    for value in unique_values:
+        # find number of positve and negative for this value
+        valuePos = float(0)
+        valueNeg = float(0)
+
+        for example in examples:
+            if example[-1] == 1: totalPos += 1
+            elif example[-1] == 2: totalNeg += 1
+
+            if(example[attribute] == value):
+                if(example[-1] == 1):
+                    valuePos += 1
+                elif(example[-1] == 2):
+                    valueNeg += 1
+
+        total += float(((valuePos + valueNeg) / (totalPos + totalNeg)) * entropy( valuePos / (valuePos + valueNeg)))
+
+    return total
 
 
 
 
-def inforamtionGain(attribute):
+def inforamtionGainBinary(attribute, examples):
     '''
     One type of IMPORTANCE-function.
 
     Attribute test on A, gives expected reduction in entropy
 
+    Information gain equation;
+    Gain(A) = B(p/p+n) - Remainer(A) # B(q) = entropy
+
     :param: attribute: attribute to test inforamtion gain.
+    :param: examples: examples to test the attribute on
     :return: bits, the heigher the better.
     '''
 
+    # to find p, n, pk and nk we need the examples and the attribute to test
+    # find number of positive and negative examples
+    count = {"p":0, "n":0}
+    for example in examples:
+        target = example[-1]
+        if target == 1:
+            count["p"] += 1
+        elif target == 2:
+            count["n"] += 1
 
+    p = float(count.get("p"))
+    n = float(count.get("n"))
+    prob = p / (p+n)
+
+    entrop = entropy(prob)
+    rem = remainder(attribute, examples)
+
+
+    return entrop - rem
 
 
 def decisionTree(examples, attributes, parent_examples):
@@ -101,6 +151,11 @@ def decisionTree(examples, attributes, parent_examples):
         return pluralityValues(examples)
 
     # else
+    importanceRank = PriorityQueue()
+    for attribute in attributes:
+        importanceRank.put((-1 * inforamtionGainBinary(attribute, examples) , attribute)) # -1 * informationGain is to reverse the sort order of the priority queue
+
+    A = importanceRank.get()[1] # get the one with the heighest score:: .get() gives; (value, attribute)
 
 
 
@@ -114,7 +169,7 @@ def main():
     # data = dataGenerator("empty_data", "txt")
     data = dataGenerator("training", "txt")
     # data = dataGenerator("training", "txt")
-    decisionTree(data, [], [])
+    decisionTree(data, [0,1,2,3,4,5,6], [])
 
 
 if __name__ == "__main__":

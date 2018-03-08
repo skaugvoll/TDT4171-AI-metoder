@@ -12,6 +12,7 @@ import math
 from Queue import PriorityQueue
 from Tree import BadAssTree
 from copy import deepcopy
+import random as r
 
 
 def dataGenerator(filename, filetype):
@@ -142,7 +143,18 @@ def inforamtionGainBinary(attribute, examples):
     return entrop - rem
 
 
-def decisionTree(examples, attributes, parent_examples):
+def randomWeights(attribute, examples, weights):
+
+    entrop = weights[attribute]
+
+    rem = remainder(attribute, examples)
+
+    # return entrop
+    return entrop - rem
+
+
+
+def decisionTree(examples, attributes, parent_examples, IG=True, weights=[]):
     '''
     bla bla bla
     :param examples:
@@ -167,9 +179,12 @@ def decisionTree(examples, attributes, parent_examples):
 
     # else
     # print("Decisions is about to be made")
-    importanceRank = PriorityQueue()
+    importanceRank = PriorityQueue() # add a set
     for attribute in attributes:
-        importanceRank.put((-1 * inforamtionGainBinary(attribute, examples) , attribute)) # -1 * informationGain is to reverse the sort order of the priority queue
+        if IG:
+            importanceRank.put((-1 * inforamtionGainBinary(attribute, examples), attribute)) # -1 * informationGain is to reverse the sort order of the priority queue
+        else:
+            importanceRank.put((randomWeights(attribute, examples, weights), attribute))
 
     A = importanceRank.get()[1] # get the one with the heighest score:: .get() gives; (value, attribute)
 
@@ -182,13 +197,14 @@ def decisionTree(examples, attributes, parent_examples):
         exs = []
         indexOfAttribute = attributes.index(A)
         reducedAtt = attributes[:indexOfAttribute] + attributes[indexOfAttribute+1 :]
+        # reducedWeights = weights[:indexOfAttribute] + attributes[indexOfAttribute + 1:]
 
         for example in examples:
             if example[A] == value:
                 exs.append(example)
 
 
-        subtreeOrValue = decisionTree(exs, reducedAtt, examples)
+        subtreeOrValue = decisionTree(exs, reducedAtt, examples, IG, weights)
         tree.addChild(edge=value, child=subtreeOrValue)
 
     # Now we should have a decision tree
@@ -235,16 +251,22 @@ def test(decisionTree):
 
 
 def main():
-    # data = dataGenerator("empty_data", "txt")
     data = dataGenerator("training", "txt")
-    # data = dataGenerator("training", "txt")
-    result = decisionTree(data, [0,1,2,3,4,5,6], [])
+    attributes = [0,1,2,3,4,5,6]
 
-    test(result)
+    IG = False # turn on information gain for IMPORTANCE or off for random weights
+    weights = []
+    if not IG:
+        weights = [ r.uniform(0,1) for x in range(len(attributes))]
 
-    # print(result)
+
+    learnedTree = decisionTree(data, attributes, [], IG=IG, weights=weights)
+    print(learnedTree)
+    print("\n")
+
+    test(learnedTree)
+
 
 
 if __name__ == "__main__":
     main()
-    # test(0.0)

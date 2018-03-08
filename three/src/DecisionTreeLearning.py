@@ -10,7 +10,8 @@ All attributes as well as the class take values 1 or 2
 '''
 import math
 from Queue import PriorityQueue
-from Tree import Tree, BadAssTree
+from Tree import BadAssTree
+from copy import deepcopy
 
 
 def dataGenerator(filename, filetype):
@@ -151,13 +152,13 @@ def decisionTree(examples, attributes, parent_examples):
     '''
     # if examples is empty then return Plurality-Values(parent_examples)
     if(len(examples) < 1):
-        print("Empty examples")
+        # print("Empty examples")
         return pluralityValues(parent_examples)
 
     # else if all exaples have the same classification, return the classification
     unique_classes = set(ex[-1] for ex in examples) # find all different targets / classes
     if(len(unique_classes) == 1):
-        print("All same target")
+        # print("All same target")
         return unique_classes.pop()
 
     # else if attributes is empty then return Plurality-Values(examples)
@@ -165,7 +166,7 @@ def decisionTree(examples, attributes, parent_examples):
         return pluralityValues(examples)
 
     # else
-    print("Decisions is about to be made")
+    # print("Decisions is about to be made")
     importanceRank = PriorityQueue()
     for attribute in attributes:
         importanceRank.put((-1 * inforamtionGainBinary(attribute, examples) , attribute)) # -1 * informationGain is to reverse the sort order of the priority queue
@@ -193,7 +194,43 @@ def decisionTree(examples, attributes, parent_examples):
     # Now we should have a decision tree
     return tree
 
+def test(decisionTree):
+    data = dataGenerator("test", "txt")
 
+    correctClassifications = 0
+    wrongClassifications = 0
+
+    orgTree = decisionTree
+    for example in data:
+        testTree = deepcopy(orgTree)
+        test = testTree.getTest()
+        correct = example[-1]
+
+        # try and classify the example
+        # DFS LIFO -search
+        visited = set() # tests we have taken
+        stack = testTree.getChildren() # found
+
+        while stack:
+            vertex = stack.pop() # get first children
+            # print(type(vertex))
+            if type(vertex) == type(1):
+                if vertex == correct:
+                    correctClassifications += 1
+                    break
+                else:
+                    wrongClassifications += 1
+                    break
+            if vertex not in visited:
+                visited.add(vertex)
+                stack.extend(vertex.getChildren())
+
+    print("CC: " + str(correctClassifications))
+    print("WC: " + str(wrongClassifications))
+    print("Total classifications; " + str(correctClassifications + wrongClassifications))
+
+    percentage = (float(correctClassifications) / float(len(data))) * 100
+    print("Percentage correct ; " + str(percentage))
 
 
 
@@ -203,7 +240,9 @@ def main():
     # data = dataGenerator("training", "txt")
     result = decisionTree(data, [0,1,2,3,4,5,6], [])
 
-    print(result)
+    test(result)
+
+    # print(result)
 
 
 if __name__ == "__main__":

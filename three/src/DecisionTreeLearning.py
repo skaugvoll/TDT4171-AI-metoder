@@ -10,7 +10,7 @@ All attributes as well as the class take values 1 or 2
 '''
 import math
 from Queue import PriorityQueue
-from Tree import Tree
+from Tree import Tree, BadAssTree
 
 
 def dataGenerator(filename, filetype):
@@ -172,21 +172,23 @@ def decisionTree(examples, attributes, parent_examples):
 
     A = importanceRank.get()[1] # get the one with the heighest score:: .get() gives; (value, attribute)
 
-    tree = Tree(label=A)
+    tree = BadAssTree(test=A)
 
     unique_values = set(ex[A] for ex in examples)  # find all different values A can have
 
     for value in unique_values:
         # reduce the dataset of examples to only have examples with the value for A equal to value
         exs = []
-        reducedAtt = attributes[:]
+        indexOfAttribute = attributes.index(A)
+        reducedAtt = attributes[:indexOfAttribute] + attributes[indexOfAttribute+1 :]
+
         for example in examples:
             if example[A] == value:
                 exs.append(example)
 
 
-        subtree = decisionTree(exs, reducedAtt.remove(A), examples)
-        tree.addChild(label=value, value=subtree)
+        subtreeOrValue = decisionTree(exs, reducedAtt, examples)
+        tree.addChild(edge=value, child=subtreeOrValue)
 
     # Now we should have a decision tree
     return tree

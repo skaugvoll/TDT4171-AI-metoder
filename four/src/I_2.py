@@ -1,7 +1,4 @@
 # coding=utf-8
-'''
-
-'''
 
 import I_1 as task_one
 import numpy as np
@@ -52,14 +49,15 @@ def task(lr, its, printInterval=1):
         if(i % printInterval == 0):
             print("{:-9d}\t{:^40}\t{:f}".format(i, str(w), losses[i].item(0)))
 
+
     # return the w that minimiizes Lsimple
     minWeightIndex = losses.index(min(losses))
     return foundWeights[minWeightIndex], losses
 
 
-def plot(allLosses):
+def plot(allLosses, legends=[]):
     lineTypes = ["go--", "bo--", "ro--", "r--", "b--", "g--", "ro-","go-","bo-", "r", "b", "g", "b-", "g-", "r-"]
-
+    print(legends)
     for i in allLosses:
         temp = []
         for l in i:
@@ -69,6 +67,11 @@ def plot(allLosses):
 
     plt.xlabel("Iterations")
     plt.ylabel("Loss value")
+
+    if legends:
+        legends = [unichr(414) + " : " + str(x) for x in legends] # U+019E
+        plt.legend(legends)
+
     plt.show()
 
 
@@ -82,7 +85,7 @@ def run():
         minWeights.append(minWeight)
         allLosses.append(allLss)
         print("\n")
-    plot(allLosses)
+    plot(allLosses, legends=learningRates)
 
 
 

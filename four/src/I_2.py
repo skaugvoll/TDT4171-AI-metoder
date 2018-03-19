@@ -14,7 +14,7 @@ def lossFunctionDerivation_W1(w):
 def lossFunctionDerivation_W2(w):
     a = 0
     b = 2 * task_one.sigmoidLogisticFunction(w, [0,1]) * task_one.sigmoidLogisticFunction(w, [0,1]) * (1 - task_one.sigmoidLogisticFunction(w, [0,1]))
-    c = 2 * (task_one.sigmoidLogisticFunction(w, [1,1]) - 1) * task_one.sigmoidLogisticFunction(w, [0,1]) * (1 - task_one.sigmoidLogisticFunction(w, [0,1]))
+    c = 2 * (task_one.sigmoidLogisticFunction(w, [1,1]) - 1) * task_one.sigmoidLogisticFunction(w, [1,1]) * (1 - task_one.sigmoidLogisticFunction(w, [1,1]))
     return a + b + c
 
 
@@ -70,10 +70,9 @@ def plot(allLosses, legends=[]):
 
     if legends:
         legends = [unichr(414) + " : " + str(x) for x in legends] # U+019E
-        plt.legend(legends)
+        plt.legend(legends, bbox_to_anchor=(1, 1), title="Learning rates")
 
     plt.show()
-
 
 
 def run():

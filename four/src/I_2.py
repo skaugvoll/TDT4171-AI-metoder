@@ -57,7 +57,6 @@ def task(lr, its, printInterval=1):
 
 def plot(allLosses, legends=[]):
     lineTypes = ["go--", "bo--", "ro--", "r--", "b--", "g--", "ro-","go-","bo-", "r", "b", "g", "b-", "g-", "r-"]
-    print(legends)
     for i in allLosses:
         temp = []
         for l in i:

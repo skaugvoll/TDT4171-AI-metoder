@@ -5,6 +5,8 @@
 
 import I_1 as task_one
 import numpy as np
+import matplotlib.pyplot as plt
+from random import randint
 
 def lossFunctionDerivation_W1(w):
     a = 2 * (task_one.sigmoidLogisticFunction(w, [1,0]) -1) * task_one.sigmoidLogisticFunction(w, [1,0]) * (1 - task_one.sigmoidLogisticFunction(w, [1,0]))
@@ -50,14 +52,41 @@ def task(lr, its, printInterval=1):
         if(i % printInterval == 0):
             print("{:-9d}\t{:^40}\t{:f}".format(i, str(w), losses[i].item(0)))
 
+    # return the w that minimiizes Lsimple
+    minWeightIndex = losses.index(min(losses))
+    return foundWeights[minWeightIndex], losses
+
+
+def plot(allLosses):
+    lineTypes = ["go--", "bo--", "ro--", "r--", "b--", "g--", "ro-","go-","bo-", "r", "b", "g", "b-", "g-", "r-"]
+
+    for i in allLosses:
+        temp = []
+        for l in i:
+            temp.append(l.item(0))
+        # plt.plot(temp, lineTypes[randint(0,len(lineTypes)-1)])
+        plt.plot(temp)
+
+    plt.xlabel("Iterations")
+    plt.ylabel("Loss value")
+    plt.show()
+
+
 
 def run():
     learningRates = [0.0001, 0.01, 0.1, 1, 10, 100]
+    minWeights = []
+    allLosses =[]
     for lr in learningRates:
-        task(lr, 50, printInterval=10)
+        minWeight, allLss = task(lr, 50, printInterval=10)
+        minWeights.append(minWeight)
+        allLosses.append(allLss)
         print("\n")
+    plot(allLosses)
+
+
 
 
 if __name__ == "__main__":
-    # task(0.1, 20)
+    # print(task(0.1, 20))
     run()

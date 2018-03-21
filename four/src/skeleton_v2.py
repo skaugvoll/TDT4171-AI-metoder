@@ -5,10 +5,21 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import cm
 
-def logistic_z(z): 
+
+##### ADDED START ####
+def lossFunction(w, xn, yn, idx):
+    a = logistic_wx(w, xn) - yn
+    b = derivation(w, xn, idx)
+
+def derivation(w, xn, idx):
+    return xn[idx] * logistic_wx(w,xn) * (1 - logistic_wx(w,xn))
+
+##### ADDED END ####
+
+def logistic_z(z):
     return 1.0/(1.0+np.exp(-z))
 
-def logistic_wx(w,x): 
+def logistic_wx(w,x):
     return logistic_z(np.inner(w,x))
 
 def classify(w,x):
@@ -28,8 +39,8 @@ def stochast_train_w(x_train,y_train,learn_rate=0.1,niter=1000):
         x=x_train[xy_index,:]
         y=y_train[xy_index]
         for i in xrange(dim):
-            update_grad = 1 ### something needs to be done here
-            w[i] = w[i] + learn_rate ### something needs to be done here
+            update_grad = 1 ### TODO : something needs to be done here : implement the derivation found for sigmoid
+            w[i] = w[i] + learn_rate * update_grad ### TODO : something needs to be done here : added multiplication between learn_rate and update_grad
     return w
 
 def batch_train_w(x_train,y_train,learn_rate=0.1,niter=1000):

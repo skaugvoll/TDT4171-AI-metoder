@@ -215,6 +215,7 @@ if __name__ == "__main__":
     print("One dataset, one training algorithm, plotting training data than plotting testing in same fig")
     tracker = []
     lr = 0.1
+    niter = 100
     d = datasets[3] # small_separable
     x_train, y_train, x_test, y_test = create_data(d, bypass=False)
 
@@ -228,7 +229,7 @@ if __name__ == "__main__":
             niter=niter,
             data_name=d,
             plot=True,
-            save=True
+            save=False
         )
     tracker.append(
         (d, niter, training_methods[0].__name__, error, time_used)
@@ -248,8 +249,8 @@ if __name__ == "__main__":
     keeping track of the running time and average error for each.
     * Plot the results (training time, error, iterations)
     '''
-    print("One dataset, one training algorithm, different iterations")
-
+    # print("One dataset, one training algorithm, different iterations")
+    # 
     # tracker = []
     # lr = 0.1
     # # niters = [10,20]

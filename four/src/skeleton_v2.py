@@ -39,8 +39,8 @@ def stochast_train_w(x_train,y_train,learn_rate=0.1,niter=1000):
         x=x_train[xy_index,:]
         y=y_train[xy_index]
         for i in xrange(dim):
-            update_grad = 1 ### TODO : something needs to be done here : implement the derivation found for sigmoid
-            w[i] = w[i] + learn_rate * update_grad ### TODO : something needs to be done here : added multiplication between learn_rate and update_grad
+            grad_i = (logistic_wx(w,x) - y) * x[i] * logistic_wx(w,x) * (1-logistic_wx(w,x)) ### TODO DONE : something needs to be done here : implement the derivation found for sigmoid
+            w[i] = w[i] - learn_rate * grad_i ### TODO : something needs to be done here : added multiplication between learn_rate and update_grad
     return w
 
 def batch_train_w(x_train,y_train,learn_rate=0.1,niter=1000):
@@ -51,10 +51,10 @@ def batch_train_w(x_train,y_train,learn_rate=0.1,niter=1000):
     index_lst=[]
     for it in xrange(niter):
         for i in xrange(dim):
-            update_grad=0.0
+            grad_i = 0.0
             for n in xrange(num_n):
-                update_grad+=(-logistic_wx(w,x_train[n])+y_train[n])# something needs to be done here
-            w[i] = w[i] + learn_rate * update_grad/num_n
+                grad_i += (logistic_wx(w,x) - y) * x[i] * logistic_wx(w,x) * (1-logistic_wx(w,x)) ### TODO DONE:
+            w[i] = w[i] - (1 / num_n) * learn_rate * grad_i
     return w
 
 def train_and_plot(xtrain,ytrain,xtest,ytest,training_method,learn_rate=0.1,niter=10):
@@ -75,3 +75,68 @@ def train_and_plot(xtrain,ytrain,xtest,ytest,training_method,learn_rate=0.1,nite
     data_test.plot(kind='scatter',x='x',y='y',c='lab',ax=ax,cmap=cm.coolwarm,edgecolors='black')
     print "error=",np.mean(error)
     return w
+
+####
+#
+# ADDED BY ME
+#
+####
+
+def print_files(datasets):
+    print("Here are the following datasets")
+    for index, dataset in enumerate(datasets):
+        print("{:<10} - {}".format(index, dataset))
+
+def create_data():
+    datasets = [
+                "big_nonsep_",
+                "big_separable_",
+                "small_nonsep",
+                "small_separable"
+                ]
+    print_files(datasets)
+    dataset_index = input("so what dataset do you want? ")
+    dataset = datasets[int(dataset_index)]
+
+    # Construct training and testing sets
+    # the panda DataFrame needs numpy ndarray
+    # the numpy hstack stacks arrays in sequence horixontally (collumn wise)
+    # and neds a tuple : sequence of ndarrays
+    # basicly if we have  examples  = [1,2,3]
+    #                     exmp_targ = [y,n,y]
+    # hstack gives [ [1, y], [2,n], [3,y] ]
+
+
+    # np.loadtxt(
+    #   file to import as numpy array with shape -->
+    #   delimter = \t because all files have a tab between each column
+    #   all files have format f1,f2, y --> 2 features thus uses column 0 and 1
+    #   and y is column 2
+    # )
+
+    # create the training data
+    x_train = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(0,1))
+    y_train = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(2))
+
+    # we also need to create the test data
+    x_test = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(0,1))
+    y_test = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(2))
+
+    print("the shape of x_train is {}\n and y_train is {}".format(x_train.shape, y_train.shape))
+    return x_train, y_train, x_test, y_test
+
+
+if __name__ == "__main__":
+    x_train, y_train, x_test, y_test = create_data()
+
+    training_methods = [stochast_train_w, batch_train_w]
+
+    w = train_and_plot(
+            xtrain=x_train,
+            ytrain=y_train,
+            xtest=x_test,
+            ytest=y_test,
+            training_method=training_methods[0],
+            learn_rate=0.1,
+            niter=10
+        )

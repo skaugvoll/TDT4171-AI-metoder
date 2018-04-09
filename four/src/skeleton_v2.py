@@ -211,10 +211,33 @@ if __name__ == "__main__":
     the testing point coloring each class your diferent colors (use different color for training and testing).
     This way you should visualize for good your model
     '''
+    # I choose stochastic on small small_separable dataset
+    print("One dataset, one training algorithm, plotting training data than plotting testing in same fig")
+    tracker = []
+    lr = 0.1
+    d = datasets[3] # small_separable
+    x_train, y_train, x_test, y_test = create_data(d, bypass=False)
 
+    w, error, time_used  = train_and_plot(
+            xtrain=x_train,
+            ytrain=y_train,
+            xtest=x_test,
+            ytest=y_test,
+            training_method=training_methods[0],
+            learn_rate=lr,
+            niter=niter,
+            data_name=d,
+            plot=True,
+            save=True
+        )
+    tracker.append(
+        (d, niter, training_methods[0].__name__, error, time_used)
+    )
 
-
-
+    print("\n\n{:<25} {:<10} {:<22} {:>10}% {:>10}".format("Dataset", "iterations", "Method", "Error","Time used"))
+    for t in tracker:
+        print("{:<25} {:<10} {:<22} {:>10} {:>10.2f}s".format(t[0], t[1], t[2], t[3]*100, t[4]))
+        # print(t)
 
 
 

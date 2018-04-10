@@ -128,8 +128,8 @@ def create_data(datasets, bypass=False):
     y_train = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(2))
 
     # we also need to create the test data
-    x_test = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(0,1))
-    y_test = np.loadtxt("data/data_{}_train.csv".format(dataset), delimiter="\t", usecols=(2))
+    x_test = np.loadtxt("data/data_{}_test.csv".format(dataset), delimiter="\t", usecols=(0,1))
+    y_test = np.loadtxt("data/data_{}_test.csv".format(dataset), delimiter="\t", usecols=(2))
 
     # print("the shape of x_train is {}\n and y_train is {}".format(x_train.shape, y_train.shape))
     return x_train, y_train, x_test, y_test
@@ -172,32 +172,32 @@ if __name__ == "__main__":
         training time,
         average error (number of errors over total number of testing samples)
     '''
-    # print("Each dataset, both methods")
-    # tracker = []
-    # lr = 0.1
-    # niter = 1
-    #
-    # for d in datasets:
-    #     x_train, y_train, x_test, y_test = create_data(d, bypass=False)
-    #     for method in training_methods:
-    #         w, error, time_used  = train_and_plot(
-    #                 xtrain=x_train,
-    #                 ytrain=y_train,
-    #                 xtest=x_test,
-    #                 ytest=y_test,
-    #                 training_method=method,
-    #                 learn_rate=lr,
-    #                 niter=niter,
-    #                 data_name=d,
-    #                 plot=False
-    #             )
-    #         tracker.append(
-    #             (d, method.__name__, error, time_used)
-    #         )
-    #
-    # print("\n\n{:<25} {:<22} {:>10}% {:>10}".format("Dataset", "Method", "Error","Time used"))
-    # for t in tracker:
-    #     print("{:<25} {:<22} {:>10} {:>10.2f}s".format(t[0], t[1], t[2]*100, t[3]))
+    print("Each dataset, both methods")
+    tracker = []
+    lr = 0.1
+    niter = 200
+
+    for d in datasets:
+        x_train, y_train, x_test, y_test = create_data(d, bypass=False)
+        for method in training_methods:
+            w, error, time_used  = train_and_plot(
+                    xtrain=x_train,
+                    ytrain=y_train,
+                    xtest=x_test,
+                    ytest=y_test,
+                    training_method=method,
+                    learn_rate=lr,
+                    niter=niter,
+                    data_name=d,
+                    plot=False
+                )
+            tracker.append(
+                (d, method.__name__, error, time_used)
+            )
+
+    print("\n\n{:<25} {:<22} {:>10}% {:>10}".format("Dataset", "Method", "Error","Time used"))
+    for t in tracker:
+        print("{:<25} {:<22} {:>10} {:>10.2f}s".format(t[0], t[1], t[2]*100, t[3]))
 
 
 
@@ -212,33 +212,34 @@ if __name__ == "__main__":
     This way you should visualize for good your model
     '''
     # I choose stochastic on small small_separable dataset
-    print("One dataset, one training algorithm, plotting training data than plotting testing in same fig")
-    tracker = []
-    lr = 0.1
-    niter = 100
-    d = datasets[3] # small_separable
-    x_train, y_train, x_test, y_test = create_data(d, bypass=False)
 
-    w, error, time_used  = train_and_plot(
-            xtrain=x_train,
-            ytrain=y_train,
-            xtest=x_test,
-            ytest=y_test,
-            training_method=training_methods[0],
-            learn_rate=lr,
-            niter=niter,
-            data_name=d,
-            plot=True,
-            save=False
-        )
-    tracker.append(
-        (d, niter, training_methods[0].__name__, error, time_used)
-    )
-
-    print("\n\n{:<25} {:<10} {:<22} {:>10}% {:>10}".format("Dataset", "iterations", "Method", "Error","Time used"))
-    for t in tracker:
-        print("{:<25} {:<10} {:<22} {:>10} {:>10.2f}s".format(t[0], t[1], t[2], t[3]*100, t[4]))
-        # print(t)
+    # print("One dataset, one training algorithm, plotting training data than plotting testing in same fig")
+    # tracker = []
+    # lr = 0.1
+    # niter = 200
+    # d = datasets[3] # small_separable
+    # x_train, y_train, x_test, y_test = create_data(d, bypass=False)
+    #
+    # w, error, time_used  = train_and_plot(
+    #         xtrain=x_train,
+    #         ytrain=y_train,
+    #         xtest=x_test,
+    #         ytest=y_test,
+    #         training_method=training_methods[0],
+    #         learn_rate=lr,
+    #         niter=niter,
+    #         data_name=d,
+    #         plot=True,
+    #         save=False
+    #     )
+    # tracker.append(
+    #     (d, niter, training_methods[0].__name__, error, time_used)
+    # )
+    #
+    # print("\n\n{:<25} {:<10} {:<22} {:>10}% {:>10}".format("Dataset", "iterations", "Method", "Error","Time used"))
+    # for t in tracker:
+    #     print("{:<25} {:<10} {:<22} {:>10} {:>10.2f}s".format(t[0], t[1], t[2], t[3]*100, t[4]))
+    #     # print(t)
 
 
 
@@ -250,7 +251,7 @@ if __name__ == "__main__":
     * Plot the results (training time, error, iterations)
     '''
     # print("One dataset, one training algorithm, different iterations")
-    # 
+    #
     # tracker = []
     # lr = 0.1
     # # niters = [10,20]
